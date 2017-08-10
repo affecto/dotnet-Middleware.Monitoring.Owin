@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <authors>$author$</authors>
+    <description>$description$</description>
+    <projectUrl>https://github.com/affecto/dotnet-Middleware.Monitoring.Owin</projectUrl>
+    <tags>affecto middleware monitoring owin</tags>
+    <releaseNotes>Monitoring middleware implementation based on OWIN interface defined in Microsoft.Owin NuGet.</releaseNotes>
+  </metadata>
+</package>
