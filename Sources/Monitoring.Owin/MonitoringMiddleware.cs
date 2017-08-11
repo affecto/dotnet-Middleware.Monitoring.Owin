@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Owin;
 
@@ -66,14 +68,14 @@ namespace Affecto.Middleware.Monitoring.Owin
         {
             if (healthCheck == null)
             {
-                context.Response.StatusCode = 204;
+                context.Response.StatusCode = (int) HttpStatusCode.NoContent;
             }
             else
             {
                 try
                 {
                     await healthCheck().ConfigureAwait(false);
-                    context.Response.StatusCode = 204;
+                    context.Response.StatusCode = (int) HttpStatusCode.NoContent;
                 }
                 catch (Exception e)
                 {
@@ -88,7 +90,7 @@ namespace Affecto.Middleware.Monitoring.Owin
                         message = e.ToString();
                     }
 
-                    context.Response.StatusCode = 503;
+                    context.Response.StatusCode = (int) HttpStatusCode.ServiceUnavailable;
                     context.Response.ReasonPhrase = message;
                 }
             }
