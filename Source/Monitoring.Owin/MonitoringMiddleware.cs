@@ -83,11 +83,11 @@ namespace Affecto.Middleware.Monitoring.Owin
 
                     if (e is AggregateException && e.InnerException != null)
                     {
-                        message = e.InnerException.ToString();
+                        message = e.InnerException.Message;
                     }
                     else
                     {
-                        message = e.ToString();
+                        message = e.Message;
                     }
 
                     context.Response.StatusCode = (int) HttpStatusCode.ServiceUnavailable;
