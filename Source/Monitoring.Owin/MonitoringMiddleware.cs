@@ -98,7 +98,7 @@ namespace Affecto.Middleware.Monitoring.Owin
 
         private static Task ShallowEndpoint(IOwinContext context)
         {
-            context.Response.StatusCode = 204;
+            context.Response.StatusCode = (int) HttpStatusCode.NoContent;
             return Task.CompletedTask;
         }
     }
