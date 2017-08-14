@@ -34,7 +34,9 @@ namespace Monitoring.Owin.Tests
             }))
             {
                 HttpResponseMessage response = await server.HttpClient.GetAsync("/_monitor/deep");
+                var msg = await response.Content.ReadAsStringAsync();
                 Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+                Assert.Equal(string.Empty, msg);
             }
         }
 
@@ -49,6 +51,7 @@ namespace Monitoring.Owin.Tests
                 HttpResponseMessage response = await server.HttpClient.GetAsync("/_monitor/deep");
                 var msg = await response.Content.ReadAsStringAsync();
                 Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
+                Assert.NotEqual(string.Empty, msg);
             }
         }
 
@@ -56,7 +59,7 @@ namespace Monitoring.Owin.Tests
         {
             var mockHealthCheckService = Substitute.For<IHealthCheckService>();
             mockHealthCheckService.CheckHealthAsync().Returns(checkHealthAsync());
-            IHealthCheckService HealthCheckServiceFactory() => mockHealthCheckService;
+            Func<IHealthCheckService> HealthCheckServiceFactory = () => mockHealthCheckService;
             return HealthCheckServiceFactory;
         }
 
