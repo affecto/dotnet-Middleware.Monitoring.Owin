@@ -1,13 +1,12 @@
 ﻿using System;
-using System.IO;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Affecto.Middleware.Monitoring.Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Testing;
 using Xunit;
+using NSubstitute;
 
 namespace Monitoring.Owin.Tests
 {
@@ -18,7 +17,7 @@ namespace Monitoring.Owin.Tests
         {
             using (var server = TestServer.Create(app =>
             {
-                app.Use(typeof(MockMonitoringMiddleware), "", (Func<Task>) SuccessHealthCheckAsync);
+                app.Use(typeof(MockMonitoringMiddleware), null, null);
             }))
             {
                 HttpResponseMessage response = await server.HttpClient.GetAsync("/_monitor/shallow");
@@ -31,7 +30,7 @@ namespace Monitoring.Owin.Tests
         {
             using (var server = TestServer.Create(app =>
             {
-                app.Use(typeof(MockMonitoringMiddleware), "", (Func<Task>) SuccessHealthCheckAsync);
+                app.Use(typeof(MockMonitoringMiddleware), "", GetHealthCheckServiceFactoryFor(SuccessHealthCheckAsync));
             }))
             {
                 HttpResponseMessage response = await server.HttpClient.GetAsync("/_monitor/deep");
@@ -44,12 +43,21 @@ namespace Monitoring.Owin.Tests
         {
             using (var server = TestServer.Create(app =>
             {
-                app.Use(typeof(MockMonitoringMiddleware), "", (Func<Task>) FailureHealthCheckAsync);
+                app.Use(typeof(MockMonitoringMiddleware), "", GetHealthCheckServiceFactoryFor(FailureHealthCheckAsync));
             }))
             {
                 HttpResponseMessage response = await server.HttpClient.GetAsync("/_monitor/deep");
+                var msg = await response.Content.ReadAsStringAsync();
                 Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
             }
+        }
+
+        private static Func<IHealthCheckService> GetHealthCheckServiceFactoryFor(Func<Task> checkHealthAsync)
+        {
+            var mockHealthCheckService = Substitute.For<IHealthCheckService>();
+            mockHealthCheckService.CheckHealthAsync().Returns(checkHealthAsync());
+            IHealthCheckService HealthCheckServiceFactory() => mockHealthCheckService;
+            return HealthCheckServiceFactory;
         }
 
         private static Task SuccessHealthCheckAsync()
@@ -65,8 +73,8 @@ namespace Monitoring.Owin.Tests
 
     internal class MockMonitoringMiddleware : MonitoringMiddleware
     {
-        public MockMonitoringMiddleware(OwinMiddleware next, string routePrefix, Func<Task> checkHealthAsync)
-            : base(next, routePrefix, checkHealthAsync)
+        public MockMonitoringMiddleware(OwinMiddleware next, string routePrefix = null, Func<IHealthCheckService> healthCheckServiceFactory = null)
+            : base(next, routePrefix, healthCheckServiceFactory)
         {
         }
     }
