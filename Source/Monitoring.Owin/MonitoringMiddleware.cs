@@ -51,16 +51,12 @@ namespace Affecto.Middleware.Monitoring.Owin
 
         private Task HandleMonitorEndpoint(IOwinContext context)
         {
-            if (context.Request.Path.ToString().Contains(monitorShallowPath))
-            {
-                return ShallowEndpoint(context);
-            }
             if (context.Request.Path.ToString().Contains(monitorDeepPath))
             {
                 return DeepEndpoint(context);
             }
 
-            return Task.CompletedTask;
+            return ShallowEndpoint(context);
         }
 
         private async Task DeepEndpoint(IOwinContext context)
