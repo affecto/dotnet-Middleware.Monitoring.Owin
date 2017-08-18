@@ -5,7 +5,7 @@
 
 ### Build status
 
-[![Build status](https://ci.appveyor.com/api/projects/status/qtta5ad35bo6bu8a/branch/master?svg=true)](https://ci.appveyor.com/project/affecto/dotnet-middleware-monitoring-owin/branch/master)
+[![Build status](https://ci.appveyor.com/api/projects/status/qtta5ad35bo6bu8a?svg=true)](https://ci.appveyor.com/project/affecto/dotnet-middleware-monitoring-owin)
 
 ## Monitoring middleware code examples (using Autofac)
 
